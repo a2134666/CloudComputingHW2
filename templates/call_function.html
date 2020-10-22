@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Cloud Computing HW2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"
+crossorigin="anonymous"></script>
+<style type="text/css">
+.formElement{
+  display:block;
+  margin:10px;
+}
+</style>
+</head>
+<body>
+<div class="w3-card-4">
+  <div class="w3-container w3-green">
+    <h2>Combine 2 images</h2>
+  </div>
+  
+  <form class="w3-container">
+    <p>
+    <div class="w3-group">
+      <label class="w3-label">第一個圖片：</label>
+      <input type="file" id="image1" class="w3-input">
+    </div>
+    <p>
+    <div class="w3-group">
+      <label class="w3-label">第二個圖片：</label>
+      <input type="file" id="image2" class="w3-input">
+    </div>
+    <p>
+    <div class="w3-group">
+      <label class="w3-label">貼合方式(圖片一位置)：</label>
+      <select id="option" class="w3-select">
+        <option value="left">left</option>
+        <option value="right">right</option>
+        <option value="top">top</option>
+        <option value="bottom">bottom</option>
+      </select>
+    </div>
+    <p>
+    <div onclick="upload()" class="w3-btn w3-green">上傳</div>
+    <p>
+    <img id="result">
+  </form>
+</div>
+<script>
+function upload(){
+  $("#result").attr('src', "/static/loading.gif");
+  
+  let image1 = $("#image1").prop("files")[0];
+  let image2 = $("#image2").prop("files")[0];
+  let option = $("#option").val();
+  let form = new FormData();
+  form.append("image1", image1);
+  form.append("image2", image2);
+  form.append("option", option);
+  //console.log(option);
+  
+  $.ajax({
+    url: "https://us-central1-inspired-berm-292410.cloudfunctions.net/hw2", processData:false, contentType:false,
+    //url: "", processData:false, contentType:false,
+    type: "POST", data: form,
+    success: function (data, textStatus) {
+        //console.log(data);
+        if(data["state"] && data["result"]){
+          $("#result").attr('src', 'data:image/jpg;base64,' + data["result"]);
+        }
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        console.log(textStatus + errorThrown);
+        return false;
+    }
+  });
+}
+</script>
+</body>
+</html>
